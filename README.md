@@ -47,10 +47,6 @@ Microserviço básico para fazer o CRUD de produtos. Lembrando que as operaçõe
 - Um banco de dados de pedidos [SQL]
 - Um banco de dados de usuários [NoSQL]
 - Um banco de dados de produtos [SQL]
+- Um message broker rabbitmq
 
-Opção de mensageria:
-1. Um SNS com dois tópicos, um para pagamento e outro para preparação. Duas filas SQS para o SNS colocar as mensagens nelas, uma para pagamento e outra para preparação.
-
-Cada microserviço com seu repositório separado, contendo testes + análise estatica + ci/cd
-
-Analisar uso de Service discovery
+Cada microserviço com seu repositório separado, contendo testes + análise estatica + ci/cd.
