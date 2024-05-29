@@ -7,10 +7,10 @@ Content-Type: application/json
 
 {
   "name": "John Doe",
-  "email": "john@example.com",
+  "email": "john@example.com.br",
   "password": "password123",
-  "cpf": "146.200.036-38",
-  "isAdmin": true
+  "cpf": "22765632039",
+  "isAdmin": false
 }
 
 ###
@@ -21,7 +21,7 @@ Content-Type: application/json
 
 {
   "password": "password123",
-  "cpf": "146.200.036-38"
+  "cpf": "30765632039"
 }
 
 ###
@@ -29,11 +29,11 @@ Content-Type: application/json
 ###
 GET http://localhost:7070/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTE0ODc0NjcsImlzQWRtaW4iOnRydWUsInVzZXJJZCI6ImY3NDQ2NzllLTNlNWMtNGFhZS1hMGZkLWQ2NjVhYmY1MGRiNyJ9.qBnRjPb1bE_7lo3gvG55MX8vvVKydMGd_U-ovx6BQRs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTcxMDg0MTQsImlzQWRtaW4iOnRydWUsInVzZXJJZCI6IjcxMGNjNTQ1LWM3OGQtNDU1Yi04NjAyLTA4MGMyODNjMTU5OCJ9.E8K8Az9IiP93W3Prdad7Nm4QpATz7VktCCCjY2LGPEw
 
 ###
 ### Get user info
 ###
 GET http://localhost:7070/user
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTE0ODc0NjcsImlzQWRtaW4iOnRydWUsInVzZXJJZCI6ImY3NDQ2NzllLTNlNWMtNGFhZS1hMGZkLWQ2NjVhYmY1MGRiNyJ9.qBnRjPb1bE_7lo3gvG55MX8vvVKydMGd_U-ovx6BQRs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTcxMDg0MTQsImlzQWRtaW4iOnRydWUsInVzZXJJZCI6IjcxMGNjNTQ1LWM3OGQtNDU1Yi04NjAyLTA4MGMyODNjMTU5OCJ9.E8K8Az9IiP93W3Prdad7Nm4QpATz7VktCCCjY2LGPEw

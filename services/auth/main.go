@@ -16,7 +16,7 @@ import (
 )
 
 func setupDB() (*sql.DB, error) {
-	db, err := sql.Open("mysql", "docker:docker@tcp(mysql:3306)/database")
+	db, err := sql.Open("mysql", "docker:docker@tcp(localhost:3306)/database")
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func isValidEmail(email string) bool {
 }
 
 func isValidCPF(cpf string) bool {
-	cpfRegex := `^\d{3}\.\d{3}\.\d{3}-\d{2}$`
+	cpfRegex := `^\d{11}$`
 	return regexp.MustCompile(cpfRegex).MatchString(cpf)
 }
 
@@ -159,7 +159,7 @@ func (app *App) GetAllUsers(c *gin.Context) {
 		return
 	}
 
-	rows, err := app.DB.Query("SELECT id, name, cpf, email, isAdmin FROM users")
+	rows, err := app.DB.Query("SELECT id, name, cpf, email, is_admin FROM users")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -196,7 +196,7 @@ func (app *App) Login(c *gin.Context) {
 	}
 
 	var user User
-	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, isAdmin FROM users WHERE cpf = ?", credentials.Cpf).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
+	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE cpf = ?", credentials.Cpf).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -230,7 +230,7 @@ func (app *App) GetUser(c *gin.Context) {
 	userId := c.MustGet("userId").(string)
 
 	var user User
-	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, isAdmin FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
+	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -250,7 +250,7 @@ func (app *App) CreateNewUserfunc(c *gin.Context) {
 	}
 
 	var existingUser User
-	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, isAdmin FROM users WHERE cpf = ?", user.Cpf).Scan(&existingUser.ID, &existingUser.Name, &existingUser.Cpf, &existingUser.Email, &existingUser.Password, &existingUser.IsAdmin)
+	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE cpf = ?", user.Cpf).Scan(&existingUser.ID, &existingUser.Name, &existingUser.Cpf, &existingUser.Email, &existingUser.Password, &existingUser.IsAdmin)
 	if err != nil && err != sql.ErrNoRows {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -266,7 +266,7 @@ func (app *App) CreateNewUserfunc(c *gin.Context) {
 		return
 	}
 
-	_, err = app.DB.Exec("INSERT INTO users (id, name, cpf, email, password, isAdmin) VALUES (?, ?, ?, ?, ?, ?)", newUser.ID, newUser.Name, newUser.Cpf, newUser.Email, newUser.Password, newUser.IsAdmin)
+	_, err = app.DB.Exec("INSERT INTO users (id, name, cpf, email, password, is_admin) VALUES (?, ?, ?, ?, ?, ?)", newUser.ID, newUser.Name, newUser.Cpf, newUser.Email, newUser.Password, newUser.IsAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -277,11 +277,6 @@ func (app *App) CreateNewUserfunc(c *gin.Context) {
 
 func main() {
 	db, err := setupDB()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
