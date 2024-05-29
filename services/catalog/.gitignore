@@ -1,0 +1,21 @@
+# Pacotes Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Arquivos de configuração
+application.properties
+application.yml
+
+# Arquivos de log
+logging/
+
+# Diretório de compilação
+target/
+
+.idea
+
+# Dependências geradas pelo Maven ou Gradle
+.mvn/
+gradle/

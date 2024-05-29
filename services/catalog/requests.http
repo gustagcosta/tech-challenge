@@ -1,0 +1,44 @@
+###
+### Listar todos os produtos
+###
+
+GET http://localhost:8080/products
+
+###
+### Obter um produto pelo ID
+###
+
+GET http://localhost:8080/products/1
+
+###
+### Criar um novo produto
+###
+
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "Produto de Teste",
+  "description": "Descrição do Produto de Teste",
+  "price": 10.99,
+  "category": "SNACK"
+}
+
+###
+### Atualizar um produto existente
+###
+
+PUT http://localhost:8080/products/1
+Content-Type: application/json
+
+{
+  "name": "Produto Atualizado",
+  "description": "Nova Descrição do Produto Atualizado",
+  "price": 15.99
+}
+
+###
+### Excluir um produto existente
+###
+
+DELETE http://localhost:8080/products/1
