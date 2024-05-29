@@ -4,6 +4,10 @@
 - Criar usuário com nome, email, CPF e senha, e criptografar senha.
 #### POST /login
 - Receber CPF e senha e tentar localizar o usuário. Se encontrado, gerar um JWT e retornar.
+#### GET /users
+- Rota para admin, retorna todos os usuários
+#### GET /user
+- Rota que retorna as informações do usuário logado
 ### BANCO DE DADOS
 - Tabela de usuários simples, apenas com os dados do usuário e um campo isAdmin para identificar os administradores.
 ### OBSERVAÇÕES
