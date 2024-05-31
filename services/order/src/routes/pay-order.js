@@ -1,7 +1,7 @@
 import dbConnect from '../database.js';
 import crypto from 'crypto';
 
-export const createRouteController = async (req, res) => {
+export const payOrderRouteControler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     let userId = null;
@@ -24,48 +24,30 @@ export const createRouteController = async (req, res) => {
       }
     }
 
-    const data = req.body;
-
-    if (!data) {
-      return res.status(400).json({ message: 'Body não fornecido' });
-    }
-
-    const items = data.items;
-
-    if (!items || items.length <= 0) {
-      return res.status(400).json({ message: 'Itens não fornecidos' });
-    }
-
-    const validateProductResponse = await fetch('http://localhost:8080/products/validate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(items.map((i) => i.id)),
-    });
-
-    if (!validateProductResponse.ok) {
-      return res.status(400).json({ message: 'Itens invalidos' });
-    }
-
     const db = await dbConnect();
 
-    const orderId = crypto.randomUUID();
+    const [orderRows] = await db.execute('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+    const order = orderRows[0];
 
-    await db.execute('INSERT INTO `order` (id, products, status, user_id) VALUES (?, ?, ?, ?)', [
-      orderId,
-      JSON.stringify(items),
-      'RECEBIDO',
-      userId,
-    ]);
+    if (!order) {
+      return res.status(404).json({ message: 'Pedido não encontrado' });
+    }
+
+    if (userId && order.user_id !== userId) {
+      return res.status(403).json({ message: 'Usuário não autorizado' });
+    }
+
+    // colocar na fila pay no rabbitmq
 
     await db.execute('INSERT INTO `order_history` (id, order_id, old_status, new_status, msg) VALUES (?, ?, ?, ?, ?)', [
       crypto.randomUUID(),
-      orderId,
-      null,
+      order.id,
       'RECEBIDO',
-      'Pedido recebido',
+      'PAGAMENTO_SOLICITADO',
+      'Pagamento solicitado',
     ]);
+
+    await db.execute('UPDATE `order` SET status = ? WHERE id = ?', ['PAGAMENTO_SOLICITADO', order.id]);
 
     await db.end();
 

@@ -232,7 +232,7 @@ func (app *App) GetUser(c *gin.Context) {
 	var user User
 	err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
 	if err == sql.ErrNoRows {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	} else if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

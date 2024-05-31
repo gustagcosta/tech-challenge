@@ -1,7 +1,10 @@
 package com.br.catalog.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -41,5 +44,16 @@ public class ProductController {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
 
         productRepository.delete(product);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<String> validateProducts(@RequestBody List<Long> productIds) {
+        for (Long productId : productIds) {
+            if (!productRepository.existsById(productId)) {
+                return ResponseEntity.badRequest().body("Invalid product ID found: " + productId);
+            }
+        }
+
+        return ResponseEntity.ok("All products are valid");
     }
 }
