@@ -1,7 +1,8 @@
 import dbConnect from '../database.js';
 import crypto from 'crypto';
+import amqp from 'amqplib';
 
-export const payOrderRouteControler = async (req, res) => {
+export const payOrderControler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     let userId = null;
@@ -26,7 +27,7 @@ export const payOrderRouteControler = async (req, res) => {
 
     const db = await dbConnect();
 
-    const [orderRows] = await db.execute('SELECT * FROM `order` WHERE id = ?', [req.params.id]);
+    const [orderRows] = await db.execute('SELECT * FROM `order` WHERE id = ?', [req.params.order_id]);
     const order = orderRows[0];
 
     if (!order) {
@@ -51,7 +52,21 @@ export const payOrderRouteControler = async (req, res) => {
 
     await db.end();
 
-    return res.status(201).send();
+    const connection = await amqp.connect('amqp://localhost');
+    const channel = await connection.createChannel();
+    const queueName = 'pay';
+
+    await channel.assertQueue(queueName, { durable: false });
+
+    const msg = { orderId: order.id };
+    channel.sendToQueue(queueName, Buffer.from(JSON.stringify(msg)));
+
+    console.log(`Mensagem enviada: ${JSON.stringify(msg)}`);
+
+    await channel.close();
+    await connection.close();
+
+    return res.status(200).send();
   } catch (error) {
     console.error({ error });
     return res.status(500).send('error interno');

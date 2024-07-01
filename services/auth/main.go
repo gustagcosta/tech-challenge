@@ -16,7 +16,7 @@ import (
 )
 
 func setupDB() (*sql.DB, error) {
-	db, err := sql.Open("mysql", "docker:docker@tcp(localhost:3306)/database")
+	db, err := sql.Open("mysql", "docker:docker@tcp(mysql:3306)/docker")
 	if err != nil {
 		return nil, err
 	}

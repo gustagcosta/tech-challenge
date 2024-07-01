@@ -1,15 +1,14 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:latest
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: database
+      MYSQL_DATABASE: docker
       MYSQL_USER: docker
       MYSQL_PASSWORD: docker
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -17,16 +16,43 @@ services:
     restart: unless-stopped
 
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3-management-alpine
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     volumes:
       - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
       - my-network
     restart: unless-stopped
+
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: auth_service
+    ports:
+      - '8080:7070'
+    depends_on:
+      - mysql
+    networks:
+      - my-network
+    restart: always
+
+  catalog:
+    build:
+      context: ./services/catalog
+      dockerfile: Dockerfile
+    container_name: catalog_service
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+    networks:
+      - my-network
+    restart: always
 
 networks:
   my-network:

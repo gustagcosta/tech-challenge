@@ -6,7 +6,7 @@ async function dbConnect() {
       host: 'localhost',
       user: 'docker',
       password: 'docker',
-      database: 'database',
+      database: 'docker',
     });
 
     return connection;

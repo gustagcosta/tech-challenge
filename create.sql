@@ -10,5 +10,15 @@ CREATE TABLE `order_history` (
   `order_id` VARCHAR(255),
   `old_status` VARCHAR(255),
   `new_status` VARCHAR(255),
-  `msg` VARCHAR(255)
+  `msg` VARCHAR(255),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `users` (
+  `id` VARCHAR(255) PRIMARY KEY,
+  `name` VARCHAR(255),
+  `cpf` VARCHAR(11) UNIQUE,
+  `email` VARCHAR(255) UNIQUE,
+  `password` VARCHAR(255),
+  `is_admin` BOOLEAN
 );

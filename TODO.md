@@ -1,0 +1,3 @@
+- dockerize all projects
+- env vars
+- kubernetes tudo

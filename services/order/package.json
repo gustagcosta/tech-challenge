@@ -2,6 +2,7 @@
   "name": "order",
   "version": "1.0.0",
   "dependencies": {
+    "amqplib": "^0.10.4",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "mysql2": "^3.10.0"

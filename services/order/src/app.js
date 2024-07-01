@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 
-import { createRouteController } from './routes/create-order.js';
+import { createOrderController } from './routes/create-order.js';
+import { payOrderControler } from './routes/pay-order.js';
+import { callbackController } from './routes/callback.js';
 
 const app = express();
 
@@ -12,6 +14,8 @@ app.get('/', (req, res) => {
   return res.json({ ok: 'cool' });
 });
 
-app.post('/order', createRouteController);
+app.post('/order', createOrderController);
+app.post('/order/:order_id/pay', payOrderControler);
+app.post('/order/callback', callbackController);
 
-app.listen(3333);
+app.listen(8082, () => console.log('running'));
