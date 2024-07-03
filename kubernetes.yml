@@ -1,0 +1,292 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-config
+data:
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: docker
+  MYSQL_USER: docker
+  MYSQL_PASSWORD: docker
+  DB_USER: docker
+  DB_PASSWORD: docker
+  DB_HOST: mysql-service
+  DB_PORT: '3306'
+  DB_NAME: docker
+  SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql-service:3306/docker?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC'
+  SPRING_DATASOURCE_USERNAME: 'docker'
+  SPRING_DATASOURCE_PASSWORD: 'docker'
+  AUTH_URL: 'auth-service'
+  CATALOG_URL: 'catalog-service'
+  ORDER_URL: 'order-service'
+  RABITMQ_URL: 'rabbitmq-service'
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-mysql
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /var/lib/mysql
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          envFrom:
+            - configMapRef:
+                name: env-config
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: pvc-mysql
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysql
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-alpine
+          ports:
+            - containerPort: 5672
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+spec:
+  type: NodePort
+  ports:
+    - port: 5672
+      targetPort: 5672
+  selector:
+    app: rabbitmq
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: gustavogcosta/tc-auth:v1
+          envFrom:
+            - configMapRef:
+                name: env-config
+          ports:
+            - containerPort: 7070
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 7070
+  selector:
+    app: auth
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+        - name: catalog
+          image: gustavogcosta/tc-catalog:v1
+          envFrom:
+            - configMapRef:
+                name: env-config
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8080
+  selector:
+    app: catalog
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: gustavogcosta/tc-order:v1
+          envFrom:
+            - configMapRef:
+                name: env-config
+          ports:
+            - containerPort: 8082
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: order
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchen-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitchen
+  template:
+    metadata:
+      labels:
+        app: kitchen
+    spec:
+      containers:
+        - name: kitchen
+          image: gustavogcosta/tc-kitchen:v1
+          envFrom:
+            - configMapRef:
+                name: env-config
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pay-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pay
+  template:
+    metadata:
+      labels:
+        app: pay
+    spec:
+      containers:
+        - name: pay
+          image: gustavogcosta/tc-pay:v1
+          envFrom:
+            - configMapRef:
+                name: env-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pay-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8083
+      targetPort: 8083
+  selector:
+    app: pay

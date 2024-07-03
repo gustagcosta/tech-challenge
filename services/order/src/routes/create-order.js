@@ -9,7 +9,7 @@ export const createOrderController = async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const userToken = authHeader.split(' ')[1];
 
-      const userResponse = await fetch('http://localhost:8080/user', {
+      const userResponse = await fetch(`http://${process.env.AUTH_URL}/user`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -36,7 +36,7 @@ export const createOrderController = async (req, res) => {
       return res.status(400).json({ message: 'Itens não fornecidos' });
     }
 
-    const validateProductResponse = await fetch('http://localhost:8081/products/validate', {
+    const validateProductResponse = await fetch(`http://${process.env.CATALOG_URL}/products/validate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

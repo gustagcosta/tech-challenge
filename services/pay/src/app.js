@@ -1,6 +1,6 @@
 const amqp = require('amqplib');
 
-const rabbitUrl = 'amqp://localhost';
+const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
 
 async function consumeQueue() {
   try {
@@ -28,7 +28,7 @@ async function consumeQueue() {
           payload.status = 'PAGAMENTO_REPROVADO';
         }
 
-        await fetch('http://localhost:8082/order/callback', {
+        await fetch(`http://${process.env.ORDER_URL}/order/callback`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ async function consumeQueue() {
 consumeQueue();
 
 async function sendToKitchenQueue(orderId) {
-  const connection = await amqp.connect('amqp://localhost');
+  const connection = await amqp.connect(rabbitUrl);
   const channel = await connection.createChannel();
   const queueName = 'kitchen';
 

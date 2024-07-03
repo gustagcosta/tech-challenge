@@ -1,6 +1,6 @@
 const amqp = require('amqplib');
 
-const rabbitUrl = 'amqp://localhost';
+const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
 
 async function consumeQueue() {
   try {
@@ -23,7 +23,7 @@ async function consumeQueue() {
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        await fetch('http://localhost:8082/order/callback', {
+        await fetch(`http://${process.env.ORDER_URL}/order/callback`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

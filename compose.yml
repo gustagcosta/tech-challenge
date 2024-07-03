@@ -32,11 +32,16 @@ services:
     build:
       context: ./services/auth
       dockerfile: Dockerfile
-    container_name: auth_service
     ports:
       - '8080:7070'
     depends_on:
       - mysql
+    environment:
+      DB_USER: docker
+      DB_PASSWORD: docker
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: docker
     networks:
       - my-network
     restart: always
@@ -45,14 +50,67 @@ services:
     build:
       context: ./services/catalog
       dockerfile: Dockerfile
-    container_name: catalog_service
     ports:
       - "8081:8080"
     depends_on:
       - mysql
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/docker?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+      SPRING_DATASOURCE_USERNAME: "docker"
+      SPRING_DATASOURCE_PASSWORD: "docker"
     networks:
       - my-network
     restart: always
+
+  order:
+    build:
+      context: ./services/order
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+      - mysql
+      - catalog
+      - auth
+    environment:
+      AUTH_URL: "auth"
+      CATALOG_URL: "catalog"
+      DB_USER: docker
+      DB_PASSWORD: docker
+      DB_HOST: mysql
+      DB_NAME: docker
+    networks:
+      - my-network
+
+  kitchen:
+    build:
+      context: ./services/kitchen
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - rabbitmq
+      - order
+    environment:
+      ORDER_URL: "order"
+      RABITMQ_URL: "rabbitmq"
+    networks:
+      - my-network
+
+  pay:
+    build:
+      context: ./services/pay
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ORDER_URL: "order"
+      RABITMQ_URL: "rabbitmq"
+    depends_on:
+      - rabbitmq
+      - order
+    networks:
+      - my-network
 
 networks:
   my-network:

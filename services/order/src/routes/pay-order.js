@@ -10,7 +10,7 @@ export const payOrderControler = async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const userToken = authHeader.split(' ')[1];
 
-      const userResponse = await fetch('http://localhost:7070/user', {
+      const userResponse = await fetch(`http://${process.env.AUTH_URL}/user`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -38,8 +38,6 @@ export const payOrderControler = async (req, res) => {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
 
-    // colocar na fila pay no rabbitmq
-
     await db.execute('INSERT INTO `order_history` (id, order_id, old_status, new_status, msg) VALUES (?, ?, ?, ?, ?)', [
       crypto.randomUUID(),
       order.id,
@@ -52,7 +50,8 @@ export const payOrderControler = async (req, res) => {
 
     await db.end();
 
-    const connection = await amqp.connect('amqp://localhost');
+    const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
+    const connection = await amqp.connect(rabbitUrl);
     const channel = await connection.createChannel();
     const queueName = 'pay';
 
