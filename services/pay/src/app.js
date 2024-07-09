@@ -1,10 +1,17 @@
 const amqp = require('amqplib');
 
-const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
+const rabbitOptions = {
+  protocol: 'amqp',
+  hostname: process.env.RABBITMQ_HOSTNAME,
+  port: parseInt(process.env.RABBITMQ_PORT),
+  username: process.env.RABBITMQ_USERNAME,
+  password: process.env.RABBITMQ_PASSWORD,
+};
 
 async function consumeQueue() {
   try {
-    const connection = await amqp.connect(rabbitUrl);
+    const connection = await amqp.connect(rabbitOptions);
+
     const channel = await connection.createChannel();
     const queueName = 'pay';
     await channel.assertQueue(queueName, { durable: false });
@@ -23,6 +30,8 @@ async function consumeQueue() {
         if (Math.random() < 0.5) {
           payload.msg = 'Pagamento aprovado';
           payload.status = 'PAGAMENTO_APROVADO';
+
+          await sendToKitchenQueue(parsedMessage.orderId);
         } else {
           payload.msg = 'Pagamento reprovado';
           payload.status = 'PAGAMENTO_REPROVADO';
@@ -35,8 +44,6 @@ async function consumeQueue() {
           },
           body: JSON.stringify(payload),
         });
-
-        await sendToKitchenQueue(parsedMessage.orderId);
 
         channel.ack(msg);
         console.log('Mensagem processada com sucesso.');
@@ -53,7 +60,7 @@ async function consumeQueue() {
 consumeQueue();
 
 async function sendToKitchenQueue(orderId) {
-  const connection = await amqp.connect(rabbitUrl);
+  const connection = await amqp.connect(rabbitOptions);
   const channel = await connection.createChannel();
   const queueName = 'kitchen';
 

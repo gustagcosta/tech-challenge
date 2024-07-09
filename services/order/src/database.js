@@ -3,10 +3,11 @@ import mysql from 'mysql2/promise';
 async function dbConnect() {
   try {
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
+      host: "192.168.49.2",
+      user: "docker",
+      password: "docker",
+      database: "docker",
+      port: "32743"
     });
 
     return connection;

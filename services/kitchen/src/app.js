@@ -1,10 +1,16 @@
 const amqp = require('amqplib');
 
-const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
+const rabbitOptions = {
+  protocol: 'amqp',
+  hostname: process.env.RABBITMQ_HOSTNAME,
+  port: parseInt(process.env.RABBITMQ_PORT),
+  username: process.env.RABBITMQ_USERNAME,
+  password: process.env.RABBITMQ_PASSWORD,
+};
 
 async function consumeQueue() {
   try {
-    const connection = await amqp.connect(rabbitUrl);
+    const connection = await amqp.connect(rabbitOptions);
     const channel = await connection.createChannel();
     const queueName = 'kitchen';
     await channel.assertQueue(queueName, { durable: false });

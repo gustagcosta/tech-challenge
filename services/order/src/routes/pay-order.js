@@ -2,6 +2,14 @@ import dbConnect from '../database.js';
 import crypto from 'crypto';
 import amqp from 'amqplib';
 
+const rabbitOptions = {
+  protocol: 'amqp',
+  hostname: process.env.RABBITMQ_HOSTNAME,
+  port: parseInt(process.env.RABBITMQ_PORT),
+  username: process.env.RABBITMQ_USERNAME,
+  password: process.env.RABBITMQ_PASSWORD,
+};
+
 export const payOrderControler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -50,8 +58,7 @@ export const payOrderControler = async (req, res) => {
 
     await db.end();
 
-    const rabbitUrl = `amqp://${process.env.RABITMQ_URL}`;
-    const connection = await amqp.connect(rabbitUrl);
+    const connection = await amqp.connect(rabbitOptions);
     const channel = await connection.createChannel();
     const queueName = 'pay';
 

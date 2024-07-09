@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: order
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: gustavogcosta/tc-order:latest
+          env:
+            - name: AUTH_URL
+              value: "auth-service"
+            - name: CATALOG_URL
+              value: "catalog-service"
+            - name: DB_USER
+              value: "docker"
+            - name: DB_PASSWORD
+              value: "docker"
+            - name: DB_HOST
+              value: "mysql-service"
+            - name: DB_DATABASE
+              value: "docker"
+            - name: RABBITMQ_HOSTNAME
+              value: "rabbitmq-service"
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: "admin"
+            - name: RABBITMQ_PASSWORD
+              value: "admin"
+          ports:
+            - containerPort: 8082

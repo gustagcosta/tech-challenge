@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchen-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitchen
+  template:
+    metadata:
+      labels:
+        app: kitchen
+    spec:
+      containers:
+        - name: kitchen
+          image: gustavogcosta/tc-kitchen:latest
+          env:
+            - name: ORDER_URL
+              value: "order-service"
+            - name: RABBITMQ_HOSTNAME
+              value: "rabbitmq-service"
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: "admin"
+            - name: RABBITMQ_PASSWORD
+              value: "admin"
+          ports:
+            - containerPort: 3000
