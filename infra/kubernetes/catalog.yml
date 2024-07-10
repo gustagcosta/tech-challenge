@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: gustavogcosta/tc-catalog:v1
+          image: gustavogcosta/tc-catalog:latest
           env:
             - name: SPRING_DATASOURCE_URL
               value: 'jdbc:mysql://mysql-service/docker?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC'

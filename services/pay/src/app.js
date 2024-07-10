@@ -28,8 +28,8 @@ async function consumeQueue() {
         const payload = { order_id: parsedMessage.orderId, status: null, msg: null };
 
         if (Math.random() < 0.5) {
-          payload.msg = 'Pagamento aprovado';
-          payload.status = 'PAGAMENTO_APROVADO';
+          payload.msg = 'Pedido em preparação';
+          payload.status = 'EM_PREPARACAO';
 
           await sendToKitchenQueue(parsedMessage.orderId);
         } else {

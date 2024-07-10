@@ -46,15 +46,9 @@ export const payOrderControler = async (req, res) => {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
 
-    await db.execute('INSERT INTO `order_history` (id, order_id, old_status, new_status, msg) VALUES (?, ?, ?, ?, ?)', [
-      crypto.randomUUID(),
-      order.id,
-      'RECEBIDO',
-      'PAGAMENTO_SOLICITADO',
-      'Pagamento solicitado',
-    ]);
-
-    await db.execute('UPDATE `order` SET status = ? WHERE id = ?', ['PAGAMENTO_SOLICITADO', order.id]);
+    if (order.status != 'RECEBIDO') {
+      return res.status(400).json({ message: 'Status inválido de pedido' });
+    }
 
     await db.end();
 

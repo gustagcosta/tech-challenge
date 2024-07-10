@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: gustavogcosta/tc-auth:v1
+          image: gustavogcosta/tc-auth:latest
           env:
             - name: DB_USER
               value: 'docker'
