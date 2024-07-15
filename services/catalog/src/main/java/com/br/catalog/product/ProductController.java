@@ -2,6 +2,7 @@ package com.br.catalog.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +24,13 @@ public class ProductController {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
+    @Transactional
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productRepository.save(product);
     }
 
+    @Transactional
     @PutMapping("/{id}")
     public Product updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
@@ -39,6 +42,7 @@ public class ProductController {
         return productRepository.save(product);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found with id: " + id));

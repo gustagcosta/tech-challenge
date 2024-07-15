@@ -8,9 +8,12 @@ fi
 MEU_USUARIO=$1
 TAG="latest"
 
-for dir in */; do
+for dir in services/*/; do
   if [ -d "$dir" ]; then
-    MINHA_IMAGEM="tc-${dir%/}"
+    MINHA_IMAGEM="tc-$(basename ${dir%/})"
+
+    # Remove "services-" prefix from the image name if present
+    MINHA_IMAGEM="${MINHA_IMAGEM#services-}"
 
     echo "Entrando na pasta $dir"
     cd "$dir" || exit
@@ -26,6 +29,6 @@ for dir in */; do
 
     echo "Processo concluído com sucesso para $MINHA_IMAGEM!"
 
-    cd ..
+    cd ../..
   fi
 done

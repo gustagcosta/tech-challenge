@@ -2,6 +2,8 @@ import dbConnect from '../database.js';
 import crypto from 'crypto';
 
 export const createOrderController = async (req, res) => {
+  const connection = await dbConnect();
+
   try {
     const authHeader = req.headers.authorization;
     let userId = null;
@@ -45,33 +47,34 @@ export const createOrderController = async (req, res) => {
     });
 
     if (!validateProductResponse.ok) {
-      return res.status(400).json({ message: 'Itens invalidos' });
+      return res.status(400).json({ message: 'Itens inválidos' });
     }
 
-    const db = await dbConnect();
+    await connection.beginTransaction();
 
     const orderId = crypto.randomUUID();
 
-    await db.execute('INSERT INTO `order` (id, products, status, user_id) VALUES (?, ?, ?, ?)', [
+    await connection.execute('INSERT INTO `order` (id, products, status, user_id) VALUES (?, ?, ?, ?)', [
       orderId,
       JSON.stringify(items),
       'RECEBIDO',
       userId,
     ]);
 
-    await db.execute('INSERT INTO `order_history` (id, order_id, old_status, new_status, msg) VALUES (?, ?, ?, ?, ?)', [
-      crypto.randomUUID(),
-      orderId,
-      null,
-      'RECEBIDO',
-      'Pedido recebido',
-    ]);
+    await connection.execute(
+      'INSERT INTO `order_history` (id, order_id, old_status, new_status, msg) VALUES (?, ?, ?, ?, ?)',
+      [crypto.randomUUID(), orderId, null, 'RECEBIDO', 'Pedido recebido']
+    );
 
-    await db.end();
+    await connection.commit();
+    await connection.end();
 
     return res.status(201).json({ orderId });
   } catch (error) {
     console.error({ error });
-    return res.status(500).send('error interno');
+    if (connection) await connection.rollback();
+    return res.status(500).send('Erro interno');
+  } finally {
+    if (connection) await connection.end();
   }
 };

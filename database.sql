@@ -1,3 +1,13 @@
+create table `product` (
+  `id` bigint auto_increment primary key,
+  `category` enum ('SNACK', 'BEVERAGE', 'SIDE_DISH', 'DESSERT') not null,
+  `created_at` datetime(6) not null,
+  `description` varchar(256) not null,
+  `name` varchar(80) not null,
+  `price` decimal(6, 2) not null,
+  `updated_at` datetime(6) not null
+);
+
 CREATE TABLE `order` (
   `id` VARCHAR(255) PRIMARY KEY,
   `products` VARCHAR(255),

@@ -34,16 +34,10 @@ async function consumeQueue() {
           await sendToKitchenQueue(parsedMessage.orderId);
         } else {
           payload.msg = 'Pagamento reprovado';
-          payload.status = 'PAGAMENTO_REPROVADO';
+          payload.status = 'REPROVADO';
         }
 
-        await fetch(`http://${process.env.ORDER_URL}/order/callback`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
+        await sendToNotifyQueue(payload);
 
         channel.ack(msg);
         console.log('Mensagem processada com sucesso.');
@@ -69,7 +63,22 @@ async function sendToKitchenQueue(orderId) {
   const msg = { orderId };
   channel.sendToQueue(queueName, Buffer.from(JSON.stringify(msg)));
 
-  console.log(`Mensagem enviada: ${JSON.stringify(msg)}`);
+  console.log(`Mensagem enviada para a fila kitchen: ${JSON.stringify(msg)}`);
+
+  await channel.close();
+  await connection.close();
+}
+
+async function sendToNotifyQueue(payload) {
+  const connection = await amqp.connect(rabbitOptions);
+  const channel = await connection.createChannel();
+  const queueName = 'notify';
+
+  await channel.assertQueue(queueName, { durable: false });
+
+  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
+
+  console.log(`Mensagem enviada para a fila notify: ${JSON.stringify(payload)}`);
 
   await channel.close();
   await connection.close();

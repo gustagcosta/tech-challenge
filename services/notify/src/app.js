@@ -11,8 +11,9 @@ const rabbitOptions = {
 async function consumeQueue() {
   try {
     const connection = await amqp.connect(rabbitOptions);
+
     const channel = await connection.createChannel();
-    const queueName = 'kitchen';
+    const queueName = 'notify';
     await channel.assertQueue(queueName, { durable: false });
 
     console.log('Aguardando mensagens...');
@@ -24,11 +25,34 @@ async function consumeQueue() {
 
         const parsedMessage = JSON.parse(messageContent);
 
-        const payload = { order_id: parsedMessage.orderId, status: 'PRONTO', msg: 'Pedido pronto' };
+        const payload = { order_id: parsedMessage.order_id, status: null, msg: null };
 
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        switch (parsedMessage.status) {
+          case 'EM_PREPARACAO':
+            payload.msg = 'Pedido em preparação';
+            payload.status = 'EM_PREPARACAO';
+            break;
+          case 'REPROVADO':
+            payload.msg = 'Pagamento reprovado';
+            payload.status = 'REPROVADO';
+            break;
+          case 'PRONTO':
+            payload.msg = 'Pedido pronto';
+            payload.status = 'PRONTO';
+            break;
+          default:
+            throw new Error('Tipo de mensagem inválido');
+        }
 
-        await sendToNotifyQueue(payload);
+        await fetch(`http://${process.env.ORDER_URL}/order/callback`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        console.log('Enviando e-mail...');
 
         channel.ack(msg);
         console.log('Mensagem processada com sucesso.');
@@ -40,21 +64,6 @@ async function consumeQueue() {
   } catch (error) {
     console.error('Erro ao consumir a fila:', error);
   }
-}
-
-async function sendToNotifyQueue(payload) {
-  const connection = await amqp.connect(rabbitOptions);
-  const channel = await connection.createChannel();
-  const queueName = 'notify';
-
-  await channel.assertQueue(queueName, { durable: false });
-
-  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
-
-  console.log(`Mensagem enviada para a fila notify: ${JSON.stringify(payload)}`);
-
-  await channel.close();
-  await connection.close();
 }
 
 consumeQueue();

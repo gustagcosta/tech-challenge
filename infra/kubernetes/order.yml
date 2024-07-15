@@ -39,7 +39,7 @@ spec:
               value: "docker"
             - name: DB_HOST
               value: "mysql-service"
-            - name: DB_DATABASE
+            - name: DB_NAME
               value: "docker"
             - name: RABBITMQ_HOSTNAME
               value: "rabbitmq-service"
@@ -50,4 +50,4 @@ spec:
             - name: RABBITMQ_PASSWORD
               value: "admin"
           ports:
-            - containerPort: 8082
+            - containerPort: 8083

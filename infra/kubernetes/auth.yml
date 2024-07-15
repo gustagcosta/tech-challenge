@@ -40,4 +40,4 @@ spec:
             - name: DB_NAME
               value: 'docker'
           ports:
-            - containerPort: 7070
+            - containerPort: 8081

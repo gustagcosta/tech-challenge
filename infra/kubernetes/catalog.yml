@@ -36,4 +36,4 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: 'docker'
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
