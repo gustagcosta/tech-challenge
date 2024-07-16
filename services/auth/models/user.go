@@ -12,17 +12,21 @@ type User struct {
 	ID       string `bson:"id" json:"id"`
 	Name     string `bson:"name" json:"name"`
 	Cpf      string `bson:"cpf" json:"cpf"`
+	Phone    string `bson:"cpf" json:"phone"`
+	Address  string `bson:"cpf" json:"address"`
 	Email    string `bson:"email" json:"email"`
 	Password string `bson:"password" json:"password"`
 	IsAdmin  bool   `bson:"isAdmin" json:"isAdmin"`
 }
 
-func NewUser(name, cpf, email, password string, isAdmin bool) (*User, error) {
+func NewUser(name, cpf, email, password string, phone string, address string, isAdmin bool) (*User, error) {
 	user := &User{
 		Name:     name,
 		Cpf:      cpf,
 		Email:    email,
 		Password: password,
+		Phone:    phone,
+		Address:  address,
 		IsAdmin:  isAdmin,
 	}
 
@@ -48,6 +52,14 @@ func NewUser(name, cpf, email, password string, isAdmin bool) (*User, error) {
 func (u *User) validate() error {
 	if u.Name == "" || len(u.Name) < 3 {
 		return fmt.Errorf("name must not be empty or have less than 3 characters")
+	}
+
+	if u.Address == "" || len(u.Address) < 3 {
+		return fmt.Errorf("address must not be empty or have less than 3 characters")
+	}
+
+	if u.Phone == "" || len(u.Phone) < 3 {
+		return fmt.Errorf("phone must not be empty or have less than 3 characters")
 	}
 
 	if u.Email == "" || !isValidEmail(u.Email) {

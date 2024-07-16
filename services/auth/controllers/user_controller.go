@@ -20,7 +20,7 @@ func GetAllUsers(app *utils.App) gin.HandlerFunc {
 			return
 		}
 
-		rows, err := app.DB.Query("SELECT id, name, cpf, email, is_admin FROM users")
+		rows, err := app.DB.Query("SELECT id, name, cpf, email, phone, address, is_admin FROM users")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -59,7 +59,7 @@ func Login(app *utils.App) gin.HandlerFunc {
 		}
 
 		var user models.User
-		err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE cpf = ?", credentials.Cpf).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
+		err := app.DB.QueryRow("SELECT id, name, cpf, email, password, phone, address, is_admin FROM users WHERE cpf = ?", credentials.Cpf).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.Phone, &user.Address, &user.IsAdmin)
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 			return
@@ -88,7 +88,7 @@ func GetUser(app *utils.App) gin.HandlerFunc {
 		userId := c.MustGet("userId").(string)
 
 		var user models.User
-		err := app.DB.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.IsAdmin)
+		err := app.DB.QueryRow("SELECT id, name, cpf, email, password, phone, address, is_admin FROM users WHERE id = ?", userId).Scan(&user.ID, &user.Name, &user.Cpf, &user.Email, &user.Password, &user.Phone, &user.Address, &user.IsAdmin)
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
@@ -116,7 +116,7 @@ func CreateNewUser(app *utils.App) gin.HandlerFunc {
 		}
 
 		var existingUser models.User
-		err = tx.QueryRow("SELECT id, name, cpf, email, password, is_admin FROM users WHERE cpf = ?", user.Cpf).Scan(&existingUser.ID, &existingUser.Name, &existingUser.Cpf, &existingUser.Email, &existingUser.Password, &existingUser.IsAdmin)
+		err = tx.QueryRow("SELECT id, name, cpf, email, password, phone, address, is_admin FROM users WHERE cpf = ?", user.Cpf).Scan(&existingUser.ID, &existingUser.Name, &existingUser.Cpf, &existingUser.Email, &existingUser.Password, &existingUser.Phone, &existingUser.Address, &existingUser.IsAdmin)
 		if err != nil && err != sql.ErrNoRows {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -128,14 +128,14 @@ func CreateNewUser(app *utils.App) gin.HandlerFunc {
 			return
 		}
 
-		newUser, err := models.NewUser(user.Name, user.Cpf, user.Email, user.Password, user.IsAdmin)
+		newUser, err := models.NewUser(user.Name, user.Cpf, user.Email, user.Password, user.Phone, user.Address, user.IsAdmin)
 		if err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		_, err = tx.Exec("INSERT INTO users (id, name, cpf, email, password, is_admin) VALUES (?, ?, ?, ?, ?, ?)", newUser.ID, newUser.Name, newUser.Cpf, newUser.Email, newUser.Password, newUser.IsAdmin)
+		_, err = tx.Exec("INSERT INTO users (id, name, cpf, email, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", newUser.ID, newUser.Name, newUser.Cpf, newUser.Email, newUser.Password, newUser.Phone, newUser.Address, newUser.IsAdmin)
 		if err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

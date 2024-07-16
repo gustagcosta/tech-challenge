@@ -26,3 +26,7 @@ Assim, temos um cenário em que, se o pagamento for aprovado, o cliente e a cozi
 #### 1.c
 
 O serviço de mensageria utilizado para a solução foi o RabbitMQ, por sua simplicidade e eficiência.
+
+### 2. Desenvolvimento Seguro
+
+P

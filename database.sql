@@ -30,5 +30,7 @@ CREATE TABLE `users` (
   `cpf` VARCHAR(11) UNIQUE,
   `email` VARCHAR(255) UNIQUE,
   `password` VARCHAR(255),
+  `phone` VARCHAR(255),
+  `address` VARCHAR(255),
   `is_admin` BOOLEAN
 );

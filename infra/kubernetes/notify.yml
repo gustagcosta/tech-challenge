@@ -17,7 +17,7 @@ spec:
           image: gustavogcosta/tc-notify:latest
           env:
             - name: ORDER_URL
-              value: "order-service"
+              value: "order-service:8083"
             - name: RABBITMQ_HOSTNAME
               value: "rabbitmq-service"
             - name: RABBITMQ_PORT
