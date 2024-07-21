@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,6 +44,80 @@ func GetAllUsers(app *utils.App) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, users)
+	}
+}
+
+func RequestExcludeData(app *utils.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId := c.MustGet("userId").(string)
+
+		newID, err := uuid.NewRandom()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		_, err = app.DB.Exec("INSERT INTO delete_data_request (id, user_id, approved, message) VALUES (?, ?, false, '')", newID, userId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Delete data request created"})
+	}
+}
+
+func ApproveExcludeData(app *utils.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if !c.MustGet("isAdmin").(bool) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+			return
+		}
+
+		var request struct {
+			RequestID string `json:"request_id" binding:"required"`
+			Approved  bool   `json:"approved" binding:"required"`
+			Message   string `json:"message"`
+		}
+
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		var deleteRequest struct {
+			UserID string `db:"user_id"`
+		}
+
+		err := app.DB.QueryRow("SELECT user_id FROM delete_data_request WHERE id = ?", request.RequestID).Scan(&deleteRequest.UserID)
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Request not found"})
+			return
+		} else if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if deleteRequest.UserID == c.MustGet("userId").(string) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You cannot approve your own request"})
+			return
+		}
+
+		_, err = app.DB.Exec("UPDATE delete_data_request SET approved = ?, message = ? WHERE id = ?", request.Approved, request.Message, request.RequestID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if request.Approved {
+			_, err = app.DB.Exec("DELETE FROM users WHERE id = ?", deleteRequest.UserID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Request updated and user deleted successfully"})
 	}
 }
 

@@ -34,3 +34,11 @@ CREATE TABLE `users` (
   `address` VARCHAR(255),
   `is_admin` BOOLEAN
 );
+
+CREATE TABLE delete_data_request (
+  `id` VARCHAR(255) PRIMARY KEY,
+  `user_id` VARCHAR(255) NOT NULL,
+  `approved` BOOLEAN DEFAULT false,
+  `message` VARCHAR(255),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

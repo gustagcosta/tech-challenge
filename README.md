@@ -29,4 +29,3 @@ O serviço de mensageria utilizado para a solução foi o RabbitMQ, por sua simp
 
 ### 2. Desenvolvimento Seguro
 
-P
