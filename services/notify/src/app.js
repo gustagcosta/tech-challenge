@@ -44,7 +44,7 @@ async function consumeQueue() {
             throw new Error('Tipo de mensagem inválido');
         }
 
-        await fetch(`http://${process.env.ORDER_URL}/order/callback`, {
+        await fetch(`http://${process.env.ORDER_URL}/api/order/callback`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

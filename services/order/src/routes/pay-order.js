@@ -18,7 +18,7 @@ export const payOrderControler = async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const userToken = authHeader.split(' ')[1];
 
-      const userResponse = await fetch(`http://${process.env.AUTH_URL}/user`, {
+      const userResponse = await fetch(`http://${process.env.AUTH_URL}/api/user`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${userToken}`,
