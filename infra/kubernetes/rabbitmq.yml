@@ -3,14 +3,11 @@ kind: Service
 metadata:
   name: rabbitmq-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: rabbitmq
       port: 5672
       targetPort: 5672
-    - name: rabbitmq-management
-      port: 15672
-      targetPort: 15672
   selector:
     app: rabbitmq
 ---
@@ -31,10 +28,9 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: rabbitmq:3.8-management
+          image: rabbitmq:3.8
           ports:
             - containerPort: 5672
-            - containerPort: 15672
           env:
             - name: RABBITMQ_DEFAULT_USER
               value: "admin"
