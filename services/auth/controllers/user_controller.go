@@ -178,10 +178,8 @@ func ExcludeDataRequest(app *utils.App) gin.HandlerFunc {
 		var results []map[string]interface{}
 
 		for rows.Next() {
-			var id, userId int
+			var id, userId, message, createdAt string
 			var approved bool
-			var message string
-			var createdAt string
 
 			err := rows.Scan(&id, &userId, &approved, &message, &createdAt)
 			if err != nil {
