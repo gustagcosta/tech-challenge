@@ -94,26 +94,26 @@ resource "aws_apigatewayv2_vpc_link" "eks" {
   subnet_ids = [var.subnet1, var.subnet2]
 }
 
-// configura o micro serviço
-resource "aws_apigatewayv2_integration" "eks" {
-  api_id = aws_apigatewayv2_api.main.id
+# // configura o micro serviço
+# resource "aws_apigatewayv2_integration" "eks" {
+#   api_id = aws_apigatewayv2_api.main.id
 
-  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a329d0d17bb6a43e8a50c3758bfb1b27/7156f5ef8983cf38/209284151e4c9d94"
-  integration_type   = "HTTP_PROXY"
-  integration_method = "ANY"
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.eks.id
-}
+#   integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a329d0d17bb6a43e8a50c3758bfb1b27/7156f5ef8983cf38/209284151e4c9d94"
+#   integration_type   = "HTTP_PROXY"
+#   integration_method = "ANY"
+#   connection_type    = "VPC_LINK"
+#   connection_id      = aws_apigatewayv2_vpc_link.eks.id
+# }
 
-// configura a rota
-resource "aws_apigatewayv2_route" "get_echo" {
-  api_id = aws_apigatewayv2_api.main.id
+# // configura a rota
+# resource "aws_apigatewayv2_route" "get_echo" {
+#   api_id = aws_apigatewayv2_api.main.id
 
-  route_key = "GET /echo"
-  target    = "integrations/${aws_apigatewayv2_integration.eks.id}"
-}
+#   route_key = "GET /echo"
+#   target    = "integrations/${aws_apigatewayv2_integration.eks.id}"
+# }
 
-// log
-output "hello_base_url" {
-  value = "${aws_apigatewayv2_stage.dev.invoke_url}/echo"
-}
+# // log
+# output "hello_base_url" {
+#   value = "${aws_apigatewayv2_stage.dev.invoke_url}/echo"
+# }
