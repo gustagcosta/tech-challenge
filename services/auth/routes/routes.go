@@ -19,5 +19,6 @@ func SetupRoutes(r *gin.Engine, app *utils.App) {
 	authGroup.POST("/exclude-data", controllers.RequestExcludeData(app))
 	authGroup.GET("/users", controllers.GetAllUsers(app))
 	authGroup.GET("/user", controllers.GetUser(app))
+	authGroup.GET("/exclude-data-requests", controllers.GetUser(app))
 	authGroup.POST("/approve-exclude-data", controllers.ApproveExcludeData(app))
 }

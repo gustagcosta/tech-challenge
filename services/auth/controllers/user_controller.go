@@ -158,6 +158,57 @@ func Login(app *utils.App) gin.HandlerFunc {
 	}
 }
 
+func ExcludeDataRequest(app *utils.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		isAdmin := c.MustGet("isAdmin").(bool)
+
+		if !isAdmin {
+			c.Status(http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+
+		rows, err := app.DB.Query("SELECT id, user_id, approved, message, created_at FROM delete_data_request")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer rows.Close()
+
+		var results []map[string]interface{}
+
+		for rows.Next() {
+			var id, userId int
+			var approved bool
+			var message string
+			var createdAt string
+
+			err := rows.Scan(&id, &userId, &approved, &message, &createdAt)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			result := map[string]interface{}{
+				"id":         id,
+				"user_id":    userId,
+				"approved":   approved,
+				"message":    message,
+				"created_at": createdAt,
+			}
+
+			results = append(results, result)
+		}
+
+		if err = rows.Err(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, results)
+	}
+}
+
 func GetUser(app *utils.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.MustGet("userId").(string)

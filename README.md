@@ -29,3 +29,14 @@ O serviço de mensageria utilizado para a solução foi o RabbitMQ, por sua simp
 
 ### 2. Desenvolvimento Seguro
 
+Esse tópico foi um pouco peculiar pois como desenvolvi os serviços de forma bem simplificada ele não encontrou nenhuma vulnerabilidade a ser corrigida. Nesse caso criei uma landing page com algumas vulnerabilidades, rodei o OWASP ZAP, gerei os relatórios que estão disponível <a href="#">aqui</a>, logo após corrigi as mesmas e gerei o relatório novamente podendo ser consultado <a href="#">aqui</a>.
+
+### 3. LGPD
+
+### 3.a
+
+Relatório RIPD disponível <a href="./docs/RIPD.pdf">aqui</a>.
+
+### 3.b
+
+Para esse tópico foi criado uma rota /exclude-data onde o usuário faz a solicitação da exclusão dos dados e uma rota /approve-exclude-data onde um usuário administrador pode aprovar a solicitação ou não, tambem possibilitando o preenchimento do motivo da não exclusão de acordo com a lei.

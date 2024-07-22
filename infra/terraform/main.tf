@@ -91,7 +91,7 @@ resource "aws_apigatewayv2_vpc_link" "eks" {
 resource "aws_apigatewayv2_integration" "catalog_service" {
   api_id = aws_apigatewayv2_api.main.id
 
-  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a63fe4cd2c6484a70b9c078705a371bd/1b3d4f15ac5e01c5/e7f0a39ce21733b5"
+  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a25e3fcf1aaf5444dbc23cd9ada16ca7/ba05dd33cb9bd5df/d9b17efdf02b395f"
   integration_type   = "HTTP_PROXY"
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
@@ -112,10 +112,17 @@ resource "aws_apigatewayv2_route" "get_products" {
   target    = "integrations/${aws_apigatewayv2_integration.catalog_service.id}"
 }
 
+resource "aws_apigatewayv2_route" "validate_products" {
+  api_id = aws_apigatewayv2_api.main.id
+
+  route_key = "POST /products/validate"
+  target    = "integrations/${aws_apigatewayv2_integration.catalog_service.id}"
+}
+
 resource "aws_apigatewayv2_integration" "auth_service" {
   api_id = aws_apigatewayv2_api.main.id
 
-  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a5b96d0268f9f4c4c89e0911915a6b26/174bb6ac8897cc2c/d3c7b41987d71dfa"
+  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a01453d13b28340dca5e3f9070a0effa/a07d837d7e69b75e/50b1613102eb814a"
   integration_type   = "HTTP_PROXY"
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
@@ -153,7 +160,7 @@ resource "aws_apigatewayv2_route" "approve_exclude_data" {
 resource "aws_apigatewayv2_integration" "order_service" {
   api_id = aws_apigatewayv2_api.main.id
 
-  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/a585a137f6a224c50b85665dc5f19853/ecda1c100a2a77c3/d7d1599c1dbfbeeb"
+  integration_uri    = "arn:aws:elasticloadbalancing:us-east-1:434832190675:listener/net/abbc741f2c01f4dffa561a4a57ff8384/a8f08a6e76a40d04/a2992823e58fa437"
   integration_type   = "HTTP_PROXY"
   integration_method = "ANY"
   connection_type    = "VPC_LINK"

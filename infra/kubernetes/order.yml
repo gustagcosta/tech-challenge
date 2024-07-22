@@ -33,9 +33,9 @@ spec:
           image: gustavogcosta/tc-order:latest
           env:
             - name: AUTH_URL
-              value: "auth-service:8081"
+              value: "auth-service"
             - name: CATALOG_URL
-              value: "catalog-service:8082"
+              value: "catalog-service"
             - name: DB_USER
               value: "docker"
             - name: DB_PASSWORD
