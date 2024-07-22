@@ -143,6 +143,13 @@ resource "aws_apigatewayv2_route" "login" {
   target    = "integrations/${aws_apigatewayv2_integration.auth_service.id}"
 }
 
+resource "aws_apigatewayv2_route" "exclude_data_requests" {
+  api_id = aws_apigatewayv2_api.main.id
+
+  route_key = "GET /exclude-data-requests"
+  target    = "integrations/${aws_apigatewayv2_integration.auth_service.id}"
+}
+
 resource "aws_apigatewayv2_route" "exclude_data" {
   api_id = aws_apigatewayv2_api.main.id
 
