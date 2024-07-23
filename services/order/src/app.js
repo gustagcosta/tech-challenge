@@ -9,7 +9,21 @@ import { getOrderController } from './routes/get-order.js';
 const app = express();
 const apiRouter = express.Router();
 
-app.use(cors());
+app.disable('x-powered-by');
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedDomainPattern = /\.amazonaws\.com$/;
+    if (!origin || allowedDomainPattern.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 apiRouter.post('/order', createOrderController);

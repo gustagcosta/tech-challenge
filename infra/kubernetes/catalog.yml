@@ -38,5 +38,21 @@ spec:
               value: 'docker'
             - name: SPRING_DATASOURCE_PASSWORD
               value: 'docker'
+            - name: SPRING_SERVLET_HEADERS_STRICT_TRANSPORT_SECURITY_PRELOAD
+              value: 'true'
+            - name: SPRING_SERVLET_HEADERS_STRICT_TRANSPORT_SECURITY_MAX_AGE
+              value: '31536000'
+            - name: SPRING_SERVLET_HEADERS_STRICT_TRANSPORT_SECURITY_INCLUDE_SUBDOMAINS
+              value: 'true'
+            - name: SPRING_CONTENT_TYPE_OPTIONS
+              value: 'nosniff'
+            - name: SPRING_SERVLET_HEADERS_CONTENT_SECURITY_POLICY
+              value: "default-src 'self'"
+            - name: SPRING_SERVLET_HEADERS_XSS_PROTECTION
+              value: "1; mode=block"
+            - name: SPRING_SERVLET_HEADERS_FRAME_OPTIONS
+              value: "DENY"
+            - name: SPRING_SERVLET_HEADERS_CACHE_CONTROL
+              value: "no-cache, no-store, must-revalidate"
           ports:
             - containerPort: 8082
