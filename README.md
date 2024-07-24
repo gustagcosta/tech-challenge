@@ -61,7 +61,7 @@ Para este tópico, foram criadas duas rotas:
 
 ### Arquitetura em Nuvem
 
-Será documentada em breve.
+<img src="./docs/diagrama_cloud.png" alt="Diagrama cloud"/>
 
 ### Explicação dos Diretórios do Projeto
 
