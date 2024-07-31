@@ -4,6 +4,7 @@ Este repositório tem como objetivo documentar e armazenar todo o trabalho reali
 
 - **Autor:** Gustavo Costa
 - **Matrícula:** RM351316
+- **Grupo:** 79
 
 O trabalho é composto por três tópicos, abordando desafios referentes às três disciplinas:
 
