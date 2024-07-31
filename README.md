@@ -58,7 +58,7 @@ Para este tópico, foram criadas duas rotas:
 
 ### Link do Vídeo Explicativo
 
-- [Vídeo explicativo das entregas](https://www.youtube.com/watch?v=ss9PWpgmaK4)
+- [Vídeo explicativo das entregas](https://vimeo.com/992521190)
 
 ### Arquitetura em Nuvem
 
